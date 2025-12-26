@@ -29,7 +29,7 @@ experiment_groups:
   - name: Group1_Situation1
     description: 对应论文Situation 1（总到达率 2 ped/s）
     q_PA1: 1.0        # PA1到达率（ped/s）
-    q_PA2: 1.0        # PA2到达率（ped/s）
+    q_PA2: 5.0        # PA2到达率（ped/s）
     arrival_duration: 60.0   # 持续60秒
     max_time: 300.0   # 最大仿真时间（秒）
     # 论文参数：PA1=1, PA2=1, Duration=60s
@@ -40,7 +40,7 @@ experiment_groups:
   - name: Group2_Situation2
     description: 对应论文Situation 2（总到达率 4 ped/s）
     q_PA1: 2.0
-    q_PA2: 2.0
+    q_PA2: 4.0
     arrival_duration: 60.0
     max_time: 400.0
     # 论文参数：PA1=2, PA2=2, Duration=60s
@@ -62,7 +62,7 @@ experiment_groups:
   - name: Group4_Situation4
     description: 对应论文Situation 4（总到达率 8 ped/s）
     q_PA1: 4.0
-    q_PA2: 4.0
+    q_PA2: 2.0
     arrival_duration: 60.0
     max_time: 600.0
     # 论文参数：PA1=4, PA2=4, Duration=60s
@@ -73,7 +73,7 @@ experiment_groups:
   - name: Group5_Situation5
     description: 对应论文Situation 5（总到达率 10 ped/s）
     q_PA1: 5.0
-    q_PA2: 5.0
+    q_PA2: 1.0
     arrival_duration: 60.0
     max_time: 800.0
     # 论文参数：PA1=5, PA2=5, Duration=60s
