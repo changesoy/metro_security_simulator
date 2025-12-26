@@ -44,8 +44,8 @@ class SystemParameters:
     L_PW1_GA: float = 3.65  # PW1到闸机距离 (m)
     L_PW2_GA: float = 4.07  # PW2到闸机距离 (m)
     A_PW2: float = 10.2  # PW2面积 (m²)
-    A_SA3: float = 29.7  # SA3面积 (m²)
-    W_B: float = 0.45  # 乘客体宽 (m)
+    A_SA3: float = 21.8  # SA3面积 (m²)
+    W_B: float = 0.5  # 乘客体宽 (m)
 
     # ==================== 速度参数 ====================
     v0: float = 1.61  # 自由流速度 (m/s)
