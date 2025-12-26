@@ -1,0 +1,72 @@
+# ============================================================
+# Metro Security Simulator - 实验组配置
+# ============================================================
+#
+# 严格对应论文 Table 3 & Table 4
+#
+# Table 3 - 客流情景：
+#   Situation | PA1到达率 | PA2到达率
+#   1         | 1 ped/s   | 5 ped/s
+#   2         | 2 ped/s   | 4 ped/s
+#   3         | 3 ped/s   | 3 ped/s
+#   4         | 4 ped/s   | 2 ped/s
+#   5         | 5 ped/s   | 1 ped/s
+#
+# Table 4 - 实验组（连续客流，Duration Type 1）：
+#   Group 1-5 对应 Situation 1-5，持续时间60秒
+#
+# 论文 Table 5 - 预期结果：
+#   Group | Access/Egress | PA1平均 | PA2平均
+#   1     | 83.0s         | 25.5s   | 12.5s
+#   2     | 138.4s        | 53.0s   | 11.8s
+#   3     | 197.8s        | 82.9s   | 11.7s
+#   4     | 259.2s        | 113.5s  | 11.7s
+#   5     | 320.6s        | 144.3s  | 11.7s
+# ============================================================
+
+experiment_groups:
+
+  - name: Group1_Situation1
+    description: "Situation 1: PA1=1, PA2=5 ped/s"
+    q_PA1: 1.0
+    q_PA2: 5.0
+    arrival_duration: 60.0
+    max_time: 600.0
+    # 预期：Access/Egress≈83s, PA1≈25.5s, PA2≈12.5s
+
+  - name: Group2_Situation2
+    description: "Situation 2: PA1=2, PA2=4 ped/s"
+    q_PA1: 2.0
+    q_PA2: 4.0
+    arrival_duration: 60.0
+    max_time: 600.0
+    # 预期：Access/Egress≈138.4s, PA1≈53s, PA2≈11.8s
+
+  - name: Group3_Situation3
+    description: "Situation 3: PA1=3, PA2=3 ped/s"
+    q_PA1: 3.0
+    q_PA2: 3.0
+    arrival_duration: 60.0
+    max_time: 600.0
+    # 预期：Access/Egress≈197.8s, PA1≈82.9s, PA2≈11.7s
+
+  - name: Group4_Situation4
+    description: "Situation 4: PA1=4, PA2=2 ped/s"
+    q_PA1: 4.0
+    q_PA2: 2.0
+    arrival_duration: 60.0
+    max_time: 800.0
+    # 预期：Access/Egress≈259.2s, PA1≈113.5s, PA2≈11.7s
+
+  - name: Group5_Situation5
+    description: "Situation 5: PA1=5, PA2=1 ped/s"
+    q_PA1: 5.0
+    q_PA2: 1.0
+    arrival_duration: 60.0
+    max_time: 1000.0
+    # 预期：Access/Egress≈320.6s, PA1≈144.3s, PA2≈11.7s
+
+output_settings:
+  output_dir: "outputs"
+  generate_figures: true
+  save_raw_data: true

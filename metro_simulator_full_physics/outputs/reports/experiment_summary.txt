@@ -1,0 +1,167 @@
+Metro Security Simulator - 实验报告
+============================================================
+
+【论文对比表（Table 5）】
+
+            Group  q_PA1 (ped/s)  q_PA2 (ped/s)  n_PA1  n_PA2  n_total  t_avg_PA1 (s)  t_avg_PA2 (s)  T_access_egress (s)  peak_queue_PW1  peak_K_PW2 (ped/m²)  peak_K_SA3 (ped/m²)
+Group1_Situation1            1.0            5.0     59    300      359          25.60          40.45                141.9               2               3.4314               1.3303
+Group2_Situation2            2.0            4.0    120    240      360          53.28          13.00                141.3              60               1.3725               1.8349
+Group3_Situation3            3.0            3.0    180    180      360          82.99          12.11                201.2             120               0.8824               1.5596
+Group4_Situation4            4.0            2.0    240    120      360         113.50          11.84                262.4             180               0.5882               1.2844
+Group5_Situation5            5.0            1.0    300     59      359         144.30          11.80                324.0             240               0.2941               1.0092
+
+
+============================================================
+实验报告: Group1_Situation1
+============================================================
+
+【核心指标】
+  Access/Egress Time: 141.90 s
+  PA1平均通行时间: 25.60 s (n=59)
+  PA2平均通行时间: 40.45 s (n=300)
+
+【PA1时间分解】
+  t_SA1_basic: 3.33 s
+  t_SA1_add: 0.88 s
+  t_PW_basic: 15.50 s
+  t_SA2_add: 0.00 s
+  t_SA3_basic: 5.89 s
+  t_SA3_add: 0.00 s
+
+【PA2时间分解】
+  t_SA1_basic: 2.91 s
+  t_SA1_add: 17.85 s
+  t_PW_basic: 13.53 s
+  t_SA2_add: 0.00 s
+  t_SA3_basic: 6.15 s
+  t_SA3_add: 0.00 s
+
+【峰值统计】
+  PW1最大人数: 15
+  PW1前最大排队: 2
+  PW2最大密度: 3.4314 ped/m²
+  SA3最大密度: 1.3303 ped/m²
+
+============================================================
+实验报告: Group2_Situation2
+============================================================
+
+【核心指标】
+  Access/Egress Time: 141.30 s
+  PA1平均通行时间: 53.28 s (n=120)
+  PA2平均通行时间: 13.00 s (n=240)
+
+【PA1时间分解】
+  t_SA1_basic: 3.33 s
+  t_SA1_add: 28.35 s
+  t_PW_basic: 15.50 s
+  t_SA2_add: 0.00 s
+  t_SA3_basic: 6.10 s
+  t_SA3_add: 0.00 s
+
+【PA2时间分解】
+  t_SA1_basic: 2.91 s
+  t_SA1_add: 0.00 s
+  t_PW_basic: 3.31 s
+  t_SA2_add: 0.00 s
+  t_SA3_basic: 6.78 s
+  t_SA3_add: 0.00 s
+
+【峰值统计】
+  PW1最大人数: 15
+  PW1前最大排队: 60
+  PW2最大密度: 1.3725 ped/m²
+  SA3最大密度: 1.8349 ped/m²
+
+============================================================
+实验报告: Group3_Situation3
+============================================================
+
+【核心指标】
+  Access/Egress Time: 201.20 s
+  PA1平均通行时间: 82.99 s (n=180)
+  PA2平均通行时间: 12.11 s (n=180)
+
+【PA1时间分解】
+  t_SA1_basic: 3.33 s
+  t_SA1_add: 58.30 s
+  t_PW_basic: 15.50 s
+  t_SA2_add: 0.00 s
+  t_SA3_basic: 5.86 s
+  t_SA3_add: 0.00 s
+
+【PA2时间分解】
+  t_SA1_basic: 2.91 s
+  t_SA1_add: 0.00 s
+  t_PW_basic: 2.89 s
+  t_SA2_add: 0.00 s
+  t_SA3_basic: 6.31 s
+  t_SA3_add: 0.00 s
+
+【峰值统计】
+  PW1最大人数: 15
+  PW1前最大排队: 120
+  PW2最大密度: 0.8824 ped/m²
+  SA3最大密度: 1.5596 ped/m²
+
+============================================================
+实验报告: Group4_Situation4
+============================================================
+
+【核心指标】
+  Access/Egress Time: 262.40 s
+  PA1平均通行时间: 113.50 s (n=240)
+  PA2平均通行时间: 11.84 s (n=120)
+
+【PA1时间分解】
+  t_SA1_basic: 3.33 s
+  t_SA1_add: 88.88 s
+  t_PW_basic: 15.50 s
+  t_SA2_add: 0.00 s
+  t_SA3_basic: 5.79 s
+  t_SA3_add: 0.00 s
+
+【PA2时间分解】
+  t_SA1_basic: 2.91 s
+  t_SA1_add: 0.00 s
+  t_PW_basic: 2.81 s
+  t_SA2_add: 0.00 s
+  t_SA3_basic: 6.12 s
+  t_SA3_add: 0.00 s
+
+【峰值统计】
+  PW1最大人数: 15
+  PW1前最大排队: 180
+  PW2最大密度: 0.5882 ped/m²
+  SA3最大密度: 1.2844 ped/m²
+
+============================================================
+实验报告: Group5_Situation5
+============================================================
+
+【核心指标】
+  Access/Egress Time: 324.00 s
+  PA1平均通行时间: 144.30 s (n=300)
+  PA2平均通行时间: 11.80 s (n=59)
+
+【PA1时间分解】
+  t_SA1_basic: 3.33 s
+  t_SA1_add: 119.70 s
+  t_PW_basic: 15.50 s
+  t_SA2_add: 0.00 s
+  t_SA3_basic: 5.77 s
+  t_SA3_add: 0.00 s
+
+【PA2时间分解】
+  t_SA1_basic: 2.91 s
+  t_SA1_add: 0.00 s
+  t_PW_basic: 2.83 s
+  t_SA2_add: 0.00 s
+  t_SA3_basic: 6.06 s
+  t_SA3_add: 0.00 s
+
+【峰值统计】
+  PW1最大人数: 15
+  PW1前最大排队: 240
+  PW2最大密度: 0.2941 ped/m²
+  SA3最大密度: 1.0092 ped/m²
