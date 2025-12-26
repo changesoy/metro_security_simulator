@@ -3,16 +3,16 @@
 ## 实验概述
 
 - **实验组数**: 5
-- **生成时间**: 2025-12-26 20:36:47
+- **生成时间**: 2025-12-26 23:47:42
 - **输出目录**: `outputs`
 
 ## 实验组列表
 
-1. **Group1_Situation1**: 对应论文Situation 1（总到达率 2 ped/s） (q=2.0 ped/s)
-2. **Group2_Situation2**: 对应论文Situation 2（总到达率 4 ped/s） (q=4.0 ped/s)
+1. **Group1_Situation1**: 对应论文Situation 1（总到达率 6 ped/s） (q=6.0 ped/s)
+2. **Group2_Situation2**: 对应论文Situation 2（总到达率 6 ped/s） (q=6.0 ped/s)
 3. **Group3_Situation3**: 对应论文Situation 3（总到达率 6 ped/s） (q=6.0 ped/s)
-4. **Group4_Situation4**: 对应论文Situation 4（总到达率 8 ped/s） (q=8.0 ped/s)
-5. **Group5_Situation5**: 对应论文Situation 5（总到达率 10 ped/s） (q=10.0 ped/s)
+4. **Group4_Situation4**: 对应论文Situation 4（总到达率 6 ped/s） (q=6.0 ped/s)
+5. **Group5_Situation5**: 对应论文Situation 5（总到达率 6 ped/s） (q=6.0 ped/s)
 
 
 ## 文件结构

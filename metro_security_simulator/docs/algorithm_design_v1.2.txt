@@ -46,48 +46,6 @@
 ================================================================================
 
 10.1 项目文件结构
-------------------------------------------------------------------------
-
-metro_security_simulator/
-├── main.py                          # 入口（极简）
-├── config/                          # 配置目录
-│   ├── __init__.py                 
-│   └── experiments.yaml             # 实验组配置 ⭐
-├── src/                             # 源代码
-│   ├── core/                        # 核心模块（可选分组）
-│   │   ├── __init__.py
-│   │   ├── config.py                # 系统参数类（Table 2）
-│   │   ├── data_structures.py       # Passenger & System 类
-│   │   ├── transit_time.py          # Eq.(1)-(8) 基本时间
-│   │   ├── admission_control.py     # Eq.(9)-(12) 准入判定
-│   │   └── simulation_engine.py     # Figure 3 递推引擎
-│   ├── analysis/                    # 分析模块（可选分组）
-│   │   ├── __init__.py
-│   │   ├── metrics.py               # Eq.(13)-(14) 指标计算
-│   │   └── visualization.py         # 图表生成
-│   ├── runners/                     # 执行器（可选分组）
-│   │   ├── __init__.py
-│   │   ├── experiment_runner.py     # 批量实验执行
-│   │   └── report_generator.py      # 报告生成
-│   └── utils/                       # 工具模块（可选）
-│       ├── __init__.py
-│       └── config_loader.py         # YAML配置加载
-├── tests/                           # 单元测试
-│   ├── test_config.py
-│   ├── test_data_structures.py
-│   ├── test_transit_time.py
-│   ├── test_admission_control.py
-│   └── test_simulation_engine.py
-├── outputs/                         # 输出目录
-│   ├── reports/
-│   ├── figures/
-│   └── data/
-├── docs/                            # 文档
-│   ├── algorithm_design_v1.2.txt
-│   └── user_guide.md
-└── requirements.txt                 # 依赖列表
-
-【简化版文件结构】（不分core/analysis/runners）：
 
 metro_security_simulator/
 ├── main.py

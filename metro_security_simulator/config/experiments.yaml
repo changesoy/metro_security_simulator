@@ -27,24 +27,24 @@ experiment_groups:
   # ========== 论文复现实验组（严格对应Table 3 & 4）==========
 
   - name: Group1_Situation1
-    description: 对应论文Situation 1（总到达率 2 ped/s）
+    description: 对应论文Situation 1（总到达率 6 ped/s）
     q_PA1: 1.0        # PA1到达率（ped/s）
     q_PA2: 5.0        # PA2到达率（ped/s）
     arrival_duration: 60.0   # 持续60秒
-    max_time: 300.0   # 最大仿真时间（秒）
+    max_time: 600.0   # 最大仿真时间（秒）
     # 论文参数：PA1=1, PA2=1, Duration=60s
-    # 总人数：(1+1) × 60 = 120人
+    # 总人数：(1+5) × 60 = 360人
     # 论文结果：Access/Egress=83s, PA1=25.5s, PA2=12.5s
     # 预期结果：Access/Egress≈80-90s, PA1≈25-30s, PA2≈12-13s
 
   - name: Group2_Situation2
-    description: 对应论文Situation 2（总到达率 4 ped/s）
+    description: 对应论文Situation 2（总到达率 6 ped/s）
     q_PA1: 2.0
     q_PA2: 4.0
     arrival_duration: 60.0
-    max_time: 400.0
+    max_time: 600.0
     # 论文参数：PA1=2, PA2=2, Duration=60s
-    # 总人数：(2+2) × 60 = 240人
+    # 总人数：(2+4) × 60 = 360人
     # 论文结果：Access/Egress=138.4s, PA1=53s, PA2=11.8s
     # 预期结果：Access/Egress≈135-145s, PA1≈50-55s, PA2≈11.7-12s
 
@@ -53,14 +53,14 @@ experiment_groups:
     q_PA1: 3.0
     q_PA2: 3.0
     arrival_duration: 60.0
-    max_time: 500.0
+    max_time: 600.0
     # 论文参数：PA1=3, PA2=3, Duration=60s
     # 总人数：(3+3) × 60 = 360人
     # 论文结果：Access/Egress=197.8s, PA1=82.9s, PA2=11.7s
     # 预期结果：Access/Egress≈195-205s, PA1≈80-85s, PA2≈11.7-12s
 
   - name: Group4_Situation4
-    description: 对应论文Situation 4（总到达率 8 ped/s）
+    description: 对应论文Situation 4（总到达率 6 ped/s）
     q_PA1: 4.0
     q_PA2: 2.0
     arrival_duration: 60.0
@@ -71,7 +71,7 @@ experiment_groups:
     # 预期结果：Access/Egress≈255-265s, PA1≈110-115s, PA2≈11.7-12s
 
   - name: Group5_Situation5
-    description: 对应论文Situation 5（总到达率 10 ped/s）
+    description: 对应论文Situation 5（总到达率 6 ped/s）
     q_PA1: 5.0
     q_PA2: 1.0
     arrival_duration: 60.0
