@@ -1,0 +1,126 @@
+# ============================================================
+# Metro Security Simulator - 实验组配置
+# ============================================================
+# 
+# 版本: v1.3 (论文验证修正版)
+# 日期: 2025年12月26日
+#
+# ⚠️ 重要修正：到达率参数
+#
+# 基于论文原文验证（Page 780, Table 3 & Table 4）：
+# - 论文使用的到达率：2-10 ped/s（不是9-36 ped/s）
+# - 持续时间：60秒（不是20秒）
+# - 总人数：120-600人（不是180-720人）
+#
+# 参数说明：
+# - q_PA1/q_PA2: 到达率（人/秒）
+# - arrival_duration: 到达持续时间（秒）
+# - max_time: 最大仿真时间（秒，防止死循环）
+#
+# 修正说明：
+# v1.2错误：q_PA1/PA2 = 4.5-18 ped/s, duration = 20s
+# v1.3修正：q_PA1/PA2 = 1.0-5.0 ped/s, duration = 60s
+# ============================================================
+
+experiment_groups:
+
+  # ========== 论文复现实验组（严格对应Table 3 & 4）==========
+
+  - name: Group1_Situation1
+    description: 对应论文Situation 1（总到达率 2 ped/s）
+    q_PA1: 1.0        # PA1到达率（ped/s）
+    q_PA2: 1.0        # PA2到达率（ped/s）
+    arrival_duration: 60.0   # 持续60秒
+    max_time: 300.0   # 最大仿真时间（秒）
+    # 论文参数：PA1=1, PA2=1, Duration=60s
+    # 总人数：(1+1) × 60 = 120人
+    # 论文结果：Access/Egress=83s, PA1=25.5s, PA2=12.5s
+    # 预期结果：Access/Egress≈80-90s, PA1≈25-30s, PA2≈12-13s
+
+  - name: Group2_Situation2
+    description: 对应论文Situation 2（总到达率 4 ped/s）
+    q_PA1: 2.0
+    q_PA2: 2.0
+    arrival_duration: 60.0
+    max_time: 400.0
+    # 论文参数：PA1=2, PA2=2, Duration=60s
+    # 总人数：(2+2) × 60 = 240人
+    # 论文结果：Access/Egress=138.4s, PA1=53s, PA2=11.8s
+    # 预期结果：Access/Egress≈135-145s, PA1≈50-55s, PA2≈11.7-12s
+
+  - name: Group3_Situation3
+    description: 对应论文Situation 3（总到达率 6 ped/s）
+    q_PA1: 3.0
+    q_PA2: 3.0
+    arrival_duration: 60.0
+    max_time: 500.0
+    # 论文参数：PA1=3, PA2=3, Duration=60s
+    # 总人数：(3+3) × 60 = 360人
+    # 论文结果：Access/Egress=197.8s, PA1=82.9s, PA2=11.7s
+    # 预期结果：Access/Egress≈195-205s, PA1≈80-85s, PA2≈11.7-12s
+
+  - name: Group4_Situation4
+    description: 对应论文Situation 4（总到达率 8 ped/s）
+    q_PA1: 4.0
+    q_PA2: 4.0
+    arrival_duration: 60.0
+    max_time: 600.0
+    # 论文参数：PA1=4, PA2=4, Duration=60s
+    # 总人数：(4+4) × 60 = 480人
+    # 论文结果：Access/Egress=259.2s, PA1=113.5s, PA2=11.7s
+    # 预期结果：Access/Egress≈255-265s, PA1≈110-115s, PA2≈11.7-12s
+
+  - name: Group5_Situation5
+    description: 对应论文Situation 5（总到达率 10 ped/s）
+    q_PA1: 5.0
+    q_PA2: 5.0
+    arrival_duration: 60.0
+    max_time: 800.0
+    # 论文参数：PA1=5, PA2=5, Duration=60s
+    # 总人数：(5+5) × 60 = 600人
+    # 论文结果：Access/Egress=320.6s, PA1=144.3s, PA2=11.7s
+    # 预期结果：Access/Egress≈315-330s, PA1≈140-145s, PA2≈11.7-12s
+
+  # ========== 扩展实验组（可选）==========
+
+  # 示例：超低负载
+  # - name: Group0_VeryLow
+  #   description: 超低负载场景（总到达率 1 ped/s）
+  #   q_PA1: 0.5
+  #   q_PA2: 0.5
+  #   arrival_duration: 60.0
+  #   max_time: 200.0
+  #   # 总人数：60人
+
+  # 示例：超高负载
+  # - name: Group6_VeryHigh
+  #   description: 超高负载场景（总到达率 12 ped/s）
+  #   q_PA1: 6.0
+  #   q_PA2: 6.0
+  #   arrival_duration: 60.0
+  #   max_time: 1000.0
+  #   # 总人数：720人
+  #   # 注意：可能导致系统饱和
+
+output_settings:
+  output_dir: "outputs"  # 输出目录（相对路径或绝对路径）
+  verbose: true          # 是否显示详细进度
+  generate_figures: true # 是否生成图表
+  save_raw_data: true    # 是否保存原始时间序列数据
+
+# ============================================================
+# 验证指标（预期结果）
+# ============================================================
+#
+# 关键验证点：
+# 1. PA2时间应稳定在11.7-12.5s（不应>20s）
+# 2. PA1时间应随负载增加（25-145s）
+# 3. PA1 > PA2（所有实验组）
+# 4. PW2不应长期饱和（K_PW2 < 3.5）
+# 5. SA1不应爆炸性堆积（D_SA1 < 100 for Group5）
+#
+# 如果结果异常，请检查：
+# - 是否使用了v1.3的配置文件
+# - admission_control.py是否使用了v1.1的改进版
+# - simulation_engine.py中步骤E是否在步骤D之前
+# ============================================================
