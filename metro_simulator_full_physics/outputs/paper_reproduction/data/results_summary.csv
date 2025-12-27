@@ -1,0 +1,11 @@
+Group,Pattern,PA1_Rate,PA2_Rate,T_ae,t_PA1,t_PA2,n_PA1,n_PA2
+Group1,continuous,1.0,5.0,141.90,25.62,40.45,60,300
+Group2,continuous,2.0,4.0,141.30,53.28,13.00,120,240
+Group3,continuous,3.0,3.0,201.20,82.99,12.11,180,180
+Group4,continuous,4.0,2.0,262.40,113.50,11.84,240,120
+Group5,continuous,5.0,1.0,324.00,144.30,11.80,300,60
+Group6,discontinuous,1.0,5.0,139.90,25.07,32.85,59,296
+Group7,discontinuous,2.0,4.0,140.30,46.46,12.83,118,236
+Group8,discontinuous,3.0,3.0,200.20,75.71,12.09,177,177
+Group9,discontinuous,4.0,2.0,261.40,105.71,11.85,236,118
+Group10,discontinuous,5.0,1.0,323.20,136.38,11.80,296,59

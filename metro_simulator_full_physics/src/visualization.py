@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 import pandas as pd
 import os
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 from src.data_structures import SystemState
 from src.metrics import extract_time_series
 
@@ -15,6 +15,10 @@ from src.metrics import extract_time_series
 mpl.rcParams['font.family'] = 'sans-serif'
 mpl.rcParams['font.sans-serif'] = ['Arial', 'DejaVu Sans', 'Liberation Sans']
 mpl.rcParams['axes.unicode_minus'] = False
+
+# 颜色和线型配置
+COLORS_5 = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd']
+LINE_STYLES_5 = ['-', '--', '-.', ':', (0, (3, 1, 1, 1))]
 
 
 def plot_PW1_queue(state: SystemState, save_path: Optional[str] = None,
@@ -189,18 +193,176 @@ def plot_comparison(results: Dict[str, SystemState], metric: str,
         plt.close()
 
 
-def plot_all_comparisons(results: Dict[str, SystemState], output_dir: str) -> None:
+def plot_all_comparisons(results: Dict[str, SystemState], output_dir: str,
+                         groups_config: List[Dict] = None) -> None:
     """生成所有对比图
     
     Args:
         results: 实验结果字典
         output_dir: 输出目录
+        groups_config: 实验组配置列表（用于区分连续/间隔到达）
     """
     os.makedirs(output_dir, exist_ok=True)
     
+    # 分离连续到达和间隔到达的结果
+    continuous_results = {}
+    discontinuous_results = {}
+    
+    if groups_config:
+        for group in groups_config:
+            name = group['name']
+            if name in results:
+                pattern = group.get('arrival_pattern', 'continuous')
+                if pattern == 'continuous':
+                    continuous_results[name] = results[name]
+                else:
+                    discontinuous_results[name] = results[name]
+    else:
+        # 如果没有配置，按名称猜测（Group1-5为连续，Group6-10为间隔）
+        for name, state in results.items():
+            group_num = int(''.join(filter(str.isdigit, name)) or '0')
+            if group_num <= 5:
+                continuous_results[name] = state
+            else:
+                discontinuous_results[name] = state
+    
+    # 所有需要绘制的指标
     metrics = ['queue_PW1', 'K_PW2', 'K_SA3', 'D_pass']
     
+    # 文件名前缀映射
+    file_prefixes = {
+        'queue_PW1': 'queue_pw1',
+        'K_PW2': 'K_PW2',
+        'K_SA3': 'K_SA3',
+        'D_pass': 'D_pass'
+    }
+    
     for metric in metrics:
-        save_path = os.path.join(output_dir, f'comparison_{metric}.png')
-        plot_comparison(results, metric, save_path=save_path, show=False)
-        print(f"  保存图表: {save_path}")
+        prefix = file_prefixes[metric]
+        
+        # 图A: 连续到达（5组5色）
+        if continuous_results:
+            save_path = os.path.join(output_dir, f'{prefix}_continuous.png')
+            plot_single_mode_comparison(continuous_results, metric, 
+                                        'Continuous', save_path)
+            print(f"  保存图表: {save_path}")
+        
+        # 图B: 间隔到达（5组5色）
+        if discontinuous_results:
+            save_path = os.path.join(output_dir, f'{prefix}_discontinuous.png')
+            plot_single_mode_comparison(discontinuous_results, metric,
+                                        'Discontinuous', save_path)
+            print(f"  保存图表: {save_path}")
+        
+        # 图C: 对比图（连续=蓝，间隔=红）
+        if continuous_results and discontinuous_results:
+            save_path = os.path.join(output_dir, f'{prefix}_comparison.png')
+            plot_two_mode_comparison(continuous_results, discontinuous_results,
+                                     metric, save_path)
+            print(f"  保存图表: {save_path}")
+
+
+def plot_single_mode_comparison(results: Dict[str, SystemState], metric: str,
+                                 mode_name: str, save_path: str) -> None:
+    """绘制单一模式下的对比图（5组5色）
+    
+    Args:
+        results: {group_name: SystemState} 字典
+        metric: 要对比的指标
+        mode_name: 模式名称（用于标题）
+        save_path: 保存路径
+    """
+    fig, ax = plt.subplots(figsize=(10, 6))
+    
+    for i, (name, state) in enumerate(results.items()):
+        df = extract_time_series(state)
+        color = COLORS_5[i % len(COLORS_5)]
+        
+        if metric in df.columns:
+            ax.plot(df['T'], df[metric], linewidth=1.5, color=color, label=name)
+    
+    titles = {
+        'queue_PW1': f'PW1 Queue Length - {mode_name} Arrival',
+        'K_PW2': f'PW2 Density - {mode_name} Arrival',
+        'K_SA3': f'SA3 Density - {mode_name} Arrival',
+        'D_pass': f'Passed Passengers - {mode_name} Arrival'
+    }
+    ylabels = {
+        'queue_PW1': 'Number of Passengers',
+        'K_PW2': 'Density (ped/m²)',
+        'K_SA3': 'Density (ped/m²)',
+        'D_pass': 'Number of Passengers'
+    }
+    
+    ax.set_xlabel('Time [s]', fontsize=11)
+    ax.set_ylabel(ylabels.get(metric, 'Value'), fontsize=11)
+    ax.set_title(titles.get(metric, f'{metric} - {mode_name}'), fontsize=12)
+    ax.grid(True, alpha=0.3, linestyle='--')
+    ax.legend(loc='upper right')
+    
+    plt.tight_layout()
+    plt.savefig(save_path, dpi=150, bbox_inches='tight')
+    plt.close()
+
+
+def plot_two_mode_comparison(continuous_results: Dict[str, SystemState],
+                              discontinuous_results: Dict[str, SystemState],
+                              metric: str, save_path: str) -> None:
+    """绘制两种模式的对比图
+    
+    连续到达：蓝色系，不同线型
+    间隔到达：红色系，不同线型
+    
+    Args:
+        continuous_results: 连续到达结果
+        discontinuous_results: 间隔到达结果
+        metric: 要对比的指标
+        save_path: 保存路径
+    """
+    fig, ax = plt.subplots(figsize=(12, 7))
+    
+    blue_color = '#1f77b4'
+    red_color = '#d62728'
+    
+    # 绘制连续到达（蓝色）
+    for i, (name, state) in enumerate(continuous_results.items()):
+        df = extract_time_series(state)
+        linestyle = LINE_STYLES_5[i % len(LINE_STYLES_5)]
+        group_num = ''.join(filter(str.isdigit, name))
+        
+        if metric in df.columns:
+            ax.plot(df['T'], df[metric], color=blue_color, linestyle=linestyle,
+                    linewidth=1.5, label=f'Cont. G{group_num}', alpha=0.9)
+    
+    # 绘制间隔到达（红色）
+    for i, (name, state) in enumerate(discontinuous_results.items()):
+        df = extract_time_series(state)
+        linestyle = LINE_STYLES_5[i % len(LINE_STYLES_5)]
+        group_num = ''.join(filter(str.isdigit, name))
+        
+        if metric in df.columns:
+            ax.plot(df['T'], df[metric], color=red_color, linestyle=linestyle,
+                    linewidth=1.5, label=f'Disc. G{group_num}', alpha=0.9)
+    
+    titles = {
+        'queue_PW1': 'PW1 Queue Length Comparison: Continuous (Blue) vs Discontinuous (Red)',
+        'K_PW2': 'PW2 Density Comparison: Continuous (Blue) vs Discontinuous (Red)',
+        'K_SA3': 'SA3 Density Comparison: Continuous (Blue) vs Discontinuous (Red)',
+        'D_pass': 'Passed Passengers Comparison: Continuous (Blue) vs Discontinuous (Red)'
+    }
+    ylabels = {
+        'queue_PW1': 'Number of Passengers',
+        'K_PW2': 'Density (ped/m²)',
+        'K_SA3': 'Density (ped/m²)',
+        'D_pass': 'Number of Passengers'
+    }
+    
+    ax.set_xlabel('Time [s]', fontsize=11)
+    ax.set_ylabel(ylabels.get(metric, 'Value'), fontsize=11)
+    ax.set_title(titles.get(metric, f'{metric} Comparison'), fontsize=12)
+    ax.grid(True, alpha=0.3, linestyle='--')
+    ax.legend(loc='upper right', ncol=2, fontsize=8)
+    
+    plt.tight_layout()
+    plt.savefig(save_path, dpi=150, bbox_inches='tight')
+    plt.close()

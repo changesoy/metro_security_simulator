@@ -43,11 +43,70 @@ def load_experiment_config(config_path: str = None) -> Dict:
     return config
 
 
-def run_single_experiment(group: Dict, verbose: bool = True) -> SystemState:
+def get_arrival_rate(t: float, q_base: float, pattern_config: dict) -> float:
+    """
+    根据到达模式获取t时刻的到达率
+    
+    Args:
+        t: 当前时刻
+        q_base: 基准到达率
+        pattern_config: 模式配置参数
+        
+    Returns:
+        t时刻的到达率
+    """
+    pattern_type = pattern_config.get('type', 'uniform')
+    
+    if pattern_type == "uniform":
+        # 连续均匀到达
+        duration = pattern_config.get('duration', 60.0)
+        if t <= duration:
+            return q_base
+        else:
+            return 0.0
+            
+    elif pattern_type == "segments":
+        # 间隔到达：检查t是否在任一时段内
+        segments = pattern_config.get('segments', [[0, 60]])
+        for seg in segments:
+            start, end = seg[0], seg[1]
+            if start <= t <= end:
+                return q_base
+        return 0.0
+        
+    else:
+        # 默认：连续到达
+        return q_base
+
+
+def get_max_arrival_time(pattern_config: dict) -> float:
+    """
+    获取最大到达时间
+    
+    Args:
+        pattern_config: 模式配置参数
+        
+    Returns:
+        最大到达时间
+    """
+    pattern_type = pattern_config.get('type', 'uniform')
+    
+    if pattern_type == "uniform":
+        return pattern_config.get('duration', 60.0)
+    elif pattern_type == "segments":
+        segments = pattern_config.get('segments', [[0, 60]])
+        return max(seg[1] for seg in segments)
+    else:
+        return 60.0
+
+
+def run_single_experiment(group: Dict, arrival_patterns: Dict = None, 
+                          verbose: bool = True) -> SystemState:
     """运行单个实验组
     
     Args:
         group: 实验组配置
+        arrival_patterns: 到达模式配置字典
         verbose: 是否显示详细信息
         
     Returns:
@@ -63,15 +122,43 @@ def run_single_experiment(group: Dict, verbose: bool = True) -> SystemState:
     
     q_PA1 = group['q_PA1']
     q_PA2 = group['q_PA2']
-    arrival_duration = group['arrival_duration']
     max_time = group.get('max_time', 1000.0)
+    
+    # 获取到达模式配置
+    pattern_name = group.get('arrival_pattern', 'continuous')
+    if arrival_patterns and pattern_name in arrival_patterns:
+        pattern_config = arrival_patterns[pattern_name]
+    else:
+        # 默认连续模式
+        pattern_config = {'type': 'uniform', 'duration': 60.0}
+    
+    arrival_duration = get_max_arrival_time(pattern_config)
     
     if verbose:
         print(f"  到达率: PA1={q_PA1} ped/s, PA2={q_PA2} ped/s")
-        print(f"  持续时间: {arrival_duration}s")
+        print(f"  到达模式: {pattern_name}")
+        print(f"  最大到达时间: {arrival_duration}s")
         print(f"  最大仿真时间: {max_time}s")
     
-    state = run_simulation(params, q_PA1, q_PA2, arrival_duration, max_time)
+    # 使用自定义到达率的仿真
+    state = SystemState(params=params)
+    
+    while state.T < max_time:
+        # 根据模式获取当前到达率
+        if state.T <= arrival_duration:
+            curr_q_PA1 = get_arrival_rate(state.T, q_PA1, pattern_config)
+            curr_q_PA2 = get_arrival_rate(state.T, q_PA2, pattern_config)
+        else:
+            curr_q_PA1, curr_q_PA2 = 0.0, 0.0
+        
+        # 执行仿真步骤
+        from src.simulation_engine import simulation_step
+        simulation_step(state, curr_q_PA1, curr_q_PA2)
+        
+        # 检查终止条件
+        if state.T > arrival_duration + 10:
+            if state.get_D_pass() == len(state.passengers) and len(state.passengers) > 0:
+                break
     
     if verbose:
         avg_times = compute_average_transit_time(state)
@@ -98,9 +185,10 @@ def run_all_experiments(config: Dict, verbose: bool = True) -> Dict[str, SystemS
     """
     results = {}
     groups = config['experiment_groups']
+    arrival_patterns = config.get('arrival_patterns', {})
     
     for group in groups:
-        state = run_single_experiment(group, verbose)
+        state = run_single_experiment(group, arrival_patterns, verbose)
         results[group['name']] = state
     
     return results
@@ -197,12 +285,15 @@ def save_results(results: Dict[str, SystemState], groups: List[Dict],
     
     print(f"  保存时间序列和乘客数据到: {os.path.join(output_dir, 'data')}")
     
-    # 3. 生成图表
+    # 3. 保存使用的参数
+    save_parameters_used(output_dir)
+    
+    # 4. 生成图表
     if output_settings.get('generate_figures', True):
         figures_dir = os.path.join(output_dir, 'figures')
-        plot_all_comparisons(results, figures_dir)
+        plot_all_comparisons(results, figures_dir, groups)
     
-    # 4. 生成汇总报告
+    # 5. 生成汇总报告
     report_lines = []
     report_lines.append("Metro Security Simulator - 实验报告")
     report_lines.append("="*60)
@@ -225,3 +316,62 @@ def save_results(results: Dict[str, SystemState], groups: List[Dict],
     print(f"  保存汇总报告: {report_path}")
     
     print(f"\n结果已保存到: {output_dir}")
+
+
+def save_parameters_used(output_dir: str):
+    """保存本次实验使用的参数（中文）"""
+    
+    params = SystemParameters()
+    
+    param_path = os.path.join(output_dir, 'data', 'parameters_used.txt')
+    with open(param_path, 'w', encoding='utf-8') as f:
+        f.write("="*60 + "\n")
+        f.write("本次实验使用的系统参数\n")
+        f.write("="*60 + "\n\n")
+        
+        f.write("【几何参数】\n")
+        f.write("-"*40 + "\n")
+        f.write(f"入口到PW1(安检)距离: {params.L_EN_PW1} m\n")
+        f.write(f"入口到PW2(快速通道)距离: {params.L_EN_PW2} m\n")
+        f.write(f"PW2通道长度: {params.L_PW2} m\n")
+        f.write(f"PW2通道面积: {params.A_PW2} m^2\n")
+        f.write(f"PW2通道宽度: {params.W_PW2:.2f} m\n")
+        f.write(f"X光机传送带长度: {params.L_SE} m\n")
+        f.write(f"PW1到闸机距离: {params.L_PW1_GA} m\n")
+        f.write(f"PW2到闸机距离: {params.L_PW2_GA} m\n")
+        f.write(f"SA3(闸机前区域)面积: {params.A_SA3} m^2\n")
+        f.write("\n")
+        
+        f.write("【设备参数】\n")
+        f.write("-"*40 + "\n")
+        f.write(f"闸机数量: {params.N_G} 台\n")
+        f.write(f"PW1(安检)容量: {params.C_PW1} 人\n")
+        f.write(f"传送带速度: {params.v_SE} m/s\n")
+        f.write("\n")
+        
+        f.write("【服务时间参数】\n")
+        f.write("-"*40 + "\n")
+        f.write(f"放物时间: {params.t_pi} s\n")
+        f.write(f"取物时间: {params.t_ti} s\n")
+        f.write(f"PW1基本通过时间: {params.t_PW1_basic:.1f} s\n")
+        f.write(f"闸机刷卡/扫码时间: {params.t_s} s\n")
+        f.write("\n")
+        
+        f.write("【速度参数】\n")
+        f.write("-"*40 + "\n")
+        f.write(f"自由流行走速度: {params.v0} m/s\n")
+        f.write(f"PW2自由流速度: {params.v_PW2_init} m/s\n")
+        f.write(f"SA3自由流速度: {params.v_SA3_init} m/s\n")
+        f.write("\n")
+        
+        f.write("【仿真参数】\n")
+        f.write("-"*40 + "\n")
+        f.write(f"时间步长: {params.dt} s\n")
+        f.write("\n")
+        
+        f.write("="*60 + "\n")
+        f.write("注: 如需修改参数，请编辑 config/experiments.yaml\n")
+        f.write("    或修改 src/config.py 中的 SystemParameters 类\n")
+        f.write("="*60 + "\n")
+    
+    print(f"  保存参数文件: {param_path}")

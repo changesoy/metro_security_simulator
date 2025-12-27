@@ -1,0 +1,215 @@
+============================================================
+METRO SECURITY SIMULATOR - FIGURE GUIDE
+============================================================
+Author: Metro Simulation Project
+Last Updated: 2024
+
+This document explains all output figures and how to interpret them.
+
+============================================================
+1. SYSTEM OVERVIEW
+============================================================
+
+The simulation models a metro station security checkpoint with:
+- SA1: Entrance area (passengers arrive here)
+- PW1: Security checkpoint (PA1 passengers with luggage)
+- PW2: Fast lane (PA2 passengers without luggage)
+- SA3: Gate area (passengers exit here)
+
+Two passenger types:
+- PA1: With luggage, must go through PW1 security screening
+- PA2: Without luggage, can use PW2 fast lane
+
+Two arrival patterns:
+- Continuous: Uniform arrival for 60 seconds
+- Discontinuous: Arrival in 0-25s and 36-70s, gap in 25-36s
+
+============================================================
+2. OUTPUT DIRECTORIES
+============================================================
+
+outputs/                        <- from main.py
+outputs/paper_reproduction/     <- from run_paper_experiments.py
+
+============================================================
+3. QUEUE LENGTH FIGURES (queue_pw1_*.png)
+============================================================
+
+What it shows:
+    Number of PA1 passengers waiting in SA1 to enter PW1
+    (the security checkpoint queue)
+
+How to read:
+    - X-axis: Time in seconds
+    - Y-axis: Number of passengers in queue
+    - Peak = maximum congestion point
+    - Slope up = arrivals > service rate
+    - Slope down = service clearing the queue
+
+queue_pw1_continuous.png
+    Groups 1-5 (continuous arrival), each with different color
+    Higher PA1 rate = higher peak queue
+
+queue_pw1_discontinuous.png
+    Groups 6-10 (discontinuous arrival)
+    Notice the dip around 25-36s when no arrivals occur
+
+queue_pw1_comparison.png
+    Blue lines = Continuous (Groups 1-5)
+    Red lines = Discontinuous (Groups 6-10)
+    Line styles (solid, dashed, dotted) distinguish groups
+    Key insight: Red lines often have lower peaks due to
+    the gap allowing queue to clear partially
+
+============================================================
+4. DENSITY FIGURES (K_PW2_*.png, K_SA3_*.png)
+============================================================
+
+What it shows:
+    Passenger density (people per square meter) in PW2 or SA3
+
+How to read:
+    - X-axis: Time in seconds
+    - Y-axis: Density in ped/m^2
+    - Higher density = more crowded = slower movement
+    - Threshold K_init (~1.36): flow starts to reduce
+    - Threshold K_max (~3.4): maximum capacity, flow blocked
+
+K_PW2 (Fast lane density):
+    High PA2 rate -> High PW2 density
+    Group 1 (PA2=5) shows highest density
+
+K_SA3 (Gate area density):
+    Receives passengers from both PW1 and PW2
+    Shows cumulative effect of both streams
+
+============================================================
+5. THROUGHPUT FIGURES (D_pass_*.png)
+============================================================
+
+What it shows:
+    Cumulative number of passengers who have passed through
+
+How to read:
+    - X-axis: Time in seconds
+    - Y-axis: Total passengers passed
+    - Steeper slope = higher throughput rate
+    - Plateau = all passengers have passed
+    - Final value = total passengers (typically 360)
+
+Key insight:
+    All groups eventually reach the same total, but
+    different arrival patterns affect HOW FAST they get there.
+
+============================================================
+6. PAPER-STYLE FIGURES (fig4, fig5, fig6)
+============================================================
+
+fig4_queue_pw1_bar.png
+    Bar chart version of PW1 queue for Group 1
+    Matches paper Figure 4 style
+
+fig5_pw2_density_comparison.png
+    Two subplots comparing PW2 density:
+    (a) Top: Continuous arrival, Groups 1-5
+    (b) Bottom: Discontinuous arrival, Groups 6-10
+    Matches paper Figure 5 style
+
+fig6_sa3_density_boxplot.png
+    Box plots showing SA3 density distribution:
+    (a) Left: Continuous arrival
+    (b) Right: Discontinuous arrival
+    Box = 25-75 percentile, line = median
+    Matches paper Figure 6 style
+
+============================================================
+7. EVOLUTION FIGURES (evolution_GroupX.png)
+============================================================
+
+Comprehensive 4-subplot view for each experiment group:
+
+Subplot 1 (top-left): Population in Each Area
+    - SA1 (blue): Entrance area
+    - PW1 (orange): Security checkpoint
+    - PW2 (green): Fast lane
+    - SA3 (red): Gate area
+    Shows how passengers flow through the system
+
+Subplot 2 (top-right): Density Evolution
+    - K_PW2 (orange): Fast lane density
+    - K_SA3 (green): Gate area density
+    - Dashed lines show threshold values
+
+Subplot 3 (bottom-left): PW1 Queue
+    Same as queue_pw1 but for single group
+    Shaded area emphasizes queue magnitude
+
+Subplot 4 (bottom-right): Cumulative Throughput
+    S-curve showing system clearing rate
+
+============================================================
+8. TIME DECOMPOSITION FIGURES (time_decomp_GroupX.png)
+============================================================
+
+What it shows:
+    Breakdown of total transit time into components
+
+Two bar charts side by side:
+    Left: PA1 passengers (with luggage)
+    Right: PA2 passengers (without luggage)
+
+Bar categories:
+    SA1 Basic: Walking time in entrance area
+    PW Basic: Service time at checkpoint/fast lane
+    SA3 Basic: Walking time in gate area
+    SA1 Extra: Queuing delay in entrance (waiting for PW1)
+    SA2 Extra: Delay in transition zone (density effects)
+    SA3 Extra: Delay in gate area (density effects)
+
+Color coding:
+    Blue bars: Basic time (unavoidable travel/service time)
+    Red bars: Extra time (congestion-induced delays)
+
+Key insight:
+    Large red bars indicate congestion problems
+    PA1 typically has more extra time due to PW1 bottleneck
+
+============================================================
+9. KEY METRICS TO LOOK FOR
+============================================================
+
+T_ae (Access/Egress Time):
+    Time for last passenger to exit after first arrives
+    Lower = more efficient system
+
+t_avg_PA1, t_avg_PA2:
+    Average transit time for each passenger type
+    PA1 > PA2 due to security screening
+
+Peak Queue:
+    Maximum queue length at PW1
+    Lower = less severe congestion
+
+============================================================
+10. COMPARING CONTINUOUS VS DISCONTINUOUS
+============================================================
+
+Main findings from the comparison:
+
+1. Peak Queue Reduction
+   Discontinuous arrival allows queue to partially clear
+   during the 25-36s gap, reducing peak congestion.
+
+2. Similar Total Time
+   T_ae is similar because same total passengers,
+   but distribution of waiting is different.
+
+3. PA1 Benefit
+   PA1 passengers benefit most from discontinuous arrival
+   because their PW1 queue is the main bottleneck.
+
+4. Practical Implication
+   Suggests that controlled/pulsed passenger entry
+   could reduce peak congestion at security checkpoints.
+
+============================================================
