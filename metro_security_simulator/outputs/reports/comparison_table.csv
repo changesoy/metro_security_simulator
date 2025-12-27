@@ -1,6 +1,0 @@
-﻿Group,Description,q_total (ped/s),q_PA1 (ped/s),q_PA2 (ped/s),n_PA1,n_PA2,n_total,t_avg_PA1 (s),t_avg_PA2 (s),T_access_egress (s),peak_D_PW1,peak_D_SA3,peak_K_PW2 (ped/m²),peak_K_SA3 (ped/m²)
-Group1_Situation1,对应论文Situation 1（总到达率 6 ped/s）,6.0,1.0,5.0,59,300,359,24.72,40.2,141.3,16,29,3.4314,1.3303
-Group2_Situation2,对应论文Situation 2（总到达率 6 ped/s）,6.0,2.0,4.0,120,240,360,27.45,14.83,85.2,31,63,1.3725,2.8899
-Group3_Situation3,对应论文Situation 3（总到达率 6 ped/s）,6.0,3.0,3.0,180,180,360,26.74,13.77,84.9,47,58,0.8824,2.6606
-Group4_Situation4,对应论文Situation 4（总到达率 6 ped/s）,6.0,4.0,2.0,240,120,360,26.7,13.52,85.5,62,56,0.5882,2.5688
-Group5_Situation5,对应论文Situation 5（总到达率 6 ped/s）,6.0,5.0,1.0,300,59,359,26.79,13.5,86.7,78,55,0.2941,2.5229
